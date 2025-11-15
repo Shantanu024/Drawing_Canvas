@@ -1,0 +1,121 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Collaborative Canvas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Room Modal Dialog -->
+  <div id="roomModal" class="modal">
+    <div class="modal-content">
+      <h2>Collaborative Canvas</h2>
+      <p class="modal-subtitle">Choose an action to get started</p>
+      
+      <!-- Create Room Tab -->
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="create">Create Room</button>
+        <button class="tab-btn" data-tab="join">Join Room</button>
+      </div>
+
+      <div id="createTab" class="tab-content active">
+        <label>
+          Room ID:
+          <input type="text" id="createRoomId" placeholder="e.g., art-session-1" />
+        </label>
+        <label>
+          Password (optional):
+          <input type="password" id="createPassword" placeholder="Leave empty for public room" />
+        </label>
+        <label>
+          Your Name:
+          <input type="text" id="createUsername" placeholder="Enter your name" />
+        </label>
+        <button id="createRoomBtn" class="btn-primary">Create Room</button>
+      </div>
+
+      <div id="joinTab" class="tab-content">
+        <label>
+          Room ID:
+          <input type="text" id="joinRoomId" placeholder="Ask the room creator" />
+        </label>
+        <label>
+          Password:
+          <input type="password" id="joinPassword" placeholder="Leave empty if no password" />
+        </label>
+        <label>
+          Your Name:
+          <input type="text" id="joinUsername" placeholder="Enter your name" />
+        </label>
+        <button id="joinRoomBtn" class="btn-primary">Join Room</button>
+        
+        <div id="publicRooms" class="public-rooms">
+          <h4>Available Rooms</h4>
+          <ul id="roomsList"></ul>
+        </div>
+      </div>
+
+      <div id="modalError" class="modal-error"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand">🖌️ Collaborative Canvas</div>
+    <div class="controls">
+      <label>Tool:
+        <select id="tool">
+          <option value="brush">Brush</option>
+          <option value="eraser">Eraser</option>
+        </select>
+      </label>
+      <label>Color:
+        <input type="color" id="color" value="#000000" />
+      </label>
+      <label>Width:
+        <input type="range" id="width" min="1" max="40" value="4" />
+        <span id="widthVal">4</span>
+      </label>
+      <button id="undo" title="Ctrl+Z">Undo</button>
+      <button id="redo" title="Ctrl+Shift+Z">Redo</button>
+      <span class="sep"></span>
+      
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <h3>Online Users</h3>
+      <ul id="users"></ul>
+      <div class="hints">
+        <p><b>Shortcuts:</b></p>
+        <ul>
+          <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> – Undo (your work)</li>
+          <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> – Redo</li>
+          <li>Hold <kbd>E</kbd> = Eraser, <kbd>B</kbd> = Brush</li>
+        </ul>
+      </div>
+    </aside>
+    <section class="stage">
+      <div id="canvasWrap">
+        <canvas id="canvas"></canvas>
+        <canvas id="live"></canvas>
+        <div id="cursors"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="status">Disconnected</span>
+    <span id="rev"></span>
+    <span id="roomInfo"></span>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="room-dialog.js"></script>
+  <script src="websocket.js"></script>
+  <script src="canvas.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
