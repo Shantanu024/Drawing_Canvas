@@ -1,4 +1,4 @@
-### **ARCHITECTURE**
+# **ARCHITECTURE**
 
 ---
 ## **1. How Drawing Events Flow (Data Flow)**

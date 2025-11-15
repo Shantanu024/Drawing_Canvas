@@ -1,5 +1,5 @@
 
-### **🖌️ Collaborative Canvas**
+# **🖌️ Collaborative Canvas**
 A real-time multiplayer drawing app where you can sketch with friends. Built with vanilla JavaScript, HTML5 Canvas, and Node.js. See everyone's cursor, watch them draw live, and even undo each other's work!
 
 ---
