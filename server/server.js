@@ -102,6 +102,7 @@ io.on('connection', (socket) => {
   });
 
   // Legacy join for backward compatibility (auto-create/join lobby)
+  // did changes for deployment
   socket.on('join', ({ room, username }) => {
     if (joined) return;
     roomId = room || 'lobby';

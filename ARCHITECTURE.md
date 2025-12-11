@@ -76,3 +76,4 @@ This avoids redrawing thousands of finished strokes every time someone moves the
 -->No authentication system (this is a demo), so anyone can join any room.
 
 >**Data persistence:** Everything lives in server memory. Restart the server = lose all drawings.
+
