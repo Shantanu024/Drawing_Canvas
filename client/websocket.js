@@ -11,7 +11,20 @@
     if (connectionPromise) return connectionPromise;
     
     connectionPromise = new Promise((resolve) => {
-      socket = io();
+      // Detect environment and set socket path accordingly
+      const isVercel = window.location.hostname !== 'localhost' && 
+                       !window.location.hostname.startsWith('127.') &&
+                       !window.location.hostname.startsWith('192.') &&
+                       !window.location.hostname.startsWith('10.');
+      
+      const socketOptions = isVercel ? 
+        {
+          path: '/api/socket.io/',
+          transports: ['websocket', 'polling']
+        } : 
+        {};
+      
+      socket = io(socketOptions);
       socket.on('connect', () => {
         dispatch('status', { connected: true });
         resolve();

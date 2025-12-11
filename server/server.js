@@ -8,15 +8,32 @@ const Rooms = require('./rooms');
 const { DrawingState } = require('./drawing-state');
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: '*' }
-});
+
+// Create or reuse HTTP server
+let server;
+let io;
+
+// Only create HTTP server in non-serverless environments
+if (!process.env.VERCEL) {
+  server = http.createServer(app);
+  io = new Server(server, {
+    cors: { origin: '*' }
+  });
+} else {
+  // In Vercel serverless, Socket.io is handled differently
+  io = new Server(undefined, {
+    transports: ['websocket', 'polling'],
+    cors: { origin: '*' },
+    allowEIO3: true
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 
-// Serve static client
-app.use(express.static(path.join(__dirname, '..', 'client')));
+// Serve static client (only if not Vercel)
+if (!process.env.VERCEL) {
+  app.use(express.static(path.join(__dirname, '..', 'client')));
+}
 
 // In-memory rooms registry: { roomId -> Room }
 const rooms = new Rooms();
@@ -198,3 +215,5 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log(`\nCollaborative Canvas running on http://localhost:${PORT}`);
 });
+
+module.exports = { app, io, rooms };
