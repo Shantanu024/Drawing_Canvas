@@ -1,20 +1,77 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Collaborative Canvas</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <div class="brand">🖌️ Collaborative Canvas</div>
+    <div class="controls">
+      <label>
+        Tool:
+        <select id="tool">
+          <option value="brush">Brush</option>
+          <option value="eraser">Eraser</option>
+        </select>
+      </label>
+      <span class="sep"></span>
+      <label>
+        Color:
+        <input type="color" id="color" value="#000000">
+      </label>
+      <span class="sep"></span>
+      <label>
+        Width: <input type="range" id="width" min="1" max="50" value="3" style="width:80px">
+        <span id="widthVal">3</span>px
+      </label>
+      <span class="sep"></span>
+      <button id="undo" title="Ctrl+Z">↶ Undo</button>
+      <button id="redo" title="Ctrl+Shift+Z">↷ Redo</button>
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <h3>Users</h3>
+      <ul id="users"></ul>
+      
+      <div class="hints" style="margin-top: 24px; font-size: 12px; color: #666;">
+        <h4>Shortcuts:</h4>
+        <ul>
+          <li><code>Ctrl+Z</code> - Undo</li>
+          <li><code>Ctrl+Shift+Z</code> - Redo</li>
+          <li><code>B</code> - Brush</li>
+          <li><code>E</code> - Eraser</li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="stage">
+      <div id="canvasWrap">
+        <canvas id="canvas"></canvas>
+        <canvas id="live"></canvas>
+        <div id="cursors"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>
+      <span id="status">Connecting...</span> 
+      | <span id="rev">rev 0</span>
+    </span>
+    <span id="roomInfo">Room: — | User: —</span>
+  </footer>
+
   <!-- Room Modal Dialog -->
   <div id="roomModal" class="modal">
     <div class="modal-content">
-      <h2>Collaborative Canvas</h2>
-      <p class="modal-subtitle">Choose an action to get started</p>
-      
-      <!-- Create Room Tab -->
+      <h2>Join or Create</h2>
+      <p class="modal-subtitle">Start by joining an existing room or create a new one</p>
+
       <div class="modal-tabs">
         <button class="tab-btn active" data-tab="create">Create Room</button>
         <button class="tab-btn" data-tab="join">Join Room</button>
@@ -23,15 +80,15 @@
       <div id="createTab" class="tab-content active">
         <label>
           Room ID:
-          <input type="text" id="createRoomId" placeholder="e.g., art-session-1" />
+          <input type="text" id="createRoomId" placeholder="e.g., my-room" maxlength="50">
         </label>
         <label>
           Password (optional):
-          <input type="password" id="createPassword" placeholder="Leave empty for public room" />
+          <input type="password" id="createPassword" placeholder="Leave blank for public room">
         </label>
         <label>
           Your Name:
-          <input type="text" id="createUsername" placeholder="Enter your name" />
+          <input type="text" id="createUsername" placeholder="e.g., Alice" maxlength="30">
         </label>
         <button id="createRoomBtn" class="btn-primary">Create Room</button>
       </div>
@@ -39,21 +96,23 @@
       <div id="joinTab" class="tab-content">
         <label>
           Room ID:
-          <input type="text" id="joinRoomId" placeholder="Ask the room creator" />
+          <input type="text" id="joinRoomId" placeholder="e.g., my-room" maxlength="50">
         </label>
         <label>
-          Password:
-          <input type="password" id="joinPassword" placeholder="Leave empty if no password" />
+          Password (if required):
+          <input type="password" id="joinPassword" placeholder="Leave blank if no password">
         </label>
         <label>
           Your Name:
-          <input type="text" id="joinUsername" placeholder="Enter your name" />
+          <input type="text" id="joinUsername" placeholder="e.g., Bob" maxlength="30">
         </label>
         <button id="joinRoomBtn" class="btn-primary">Join Room</button>
-        
-        <div id="publicRooms" class="public-rooms">
-          <h4>Available Rooms</h4>
-          <ul id="roomsList"></ul>
+
+        <div class="public-rooms">
+          <h4>Public Rooms</h4>
+          <ul id="roomsList">
+            <li>No public rooms available yet</li>
+          </ul>
         </div>
       </div>
 
@@ -61,60 +120,12 @@
     </div>
   </div>
 
-  <header>
-    <div class="brand">🖌️ Collaborative Canvas</div>
-    <div class="controls">
-      <label>Tool:
-        <select id="tool">
-          <option value="brush">Brush</option>
-          <option value="eraser">Eraser</option>
-        </select>
-      </label>
-      <label>Color:
-        <input type="color" id="color" value="#000000" />
-      </label>
-      <label>Width:
-        <input type="range" id="width" min="1" max="40" value="4" />
-        <span id="widthVal">4</span>
-      </label>
-      <button id="undo" title="Ctrl+Z">Undo</button>
-      <button id="redo" title="Ctrl+Shift+Z">Redo</button>
-      <span class="sep"></span>
-      
-    </div>
-  </header>
+  <!-- Socket.io client library -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
-  <main>
-    <aside>
-      <h3>Online Users</h3>
-      <ul id="users"></ul>
-      <div class="hints">
-        <p><b>Shortcuts:</b></p>
-        <ul>
-          <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> – Undo (your work)</li>
-          <li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> – Redo</li>
-          <li>Hold <kbd>E</kbd> = Eraser, <kbd>B</kbd> = Brush</li>
-        </ul>
-      </div>
-    </aside>
-    <section class="stage">
-      <div id="canvasWrap">
-        <canvas id="canvas"></canvas>
-        <canvas id="live"></canvas>
-        <div id="cursors"></div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <span id="status">Disconnected</span>
-    <span id="rev"></span>
-    <span id="roomInfo"></span>
-  </footer>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="room-dialog.js"></script>
+  <!-- App scripts in order -->
   <script src="websocket.js"></script>
+  <script src="room-dialog.js"></script>
   <script src="canvas.js"></script>
   <script src="main.js"></script>
 </body>

@@ -45,13 +45,11 @@
   }
 
   function hideModal() {
-    console.log('hideModal called');
     modal.classList.add('hidden');
     modal.style.display = 'none';
   }
 
   function showModal() {
-    console.log('showModal called');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
     modalError.style.display = 'none';
@@ -70,13 +68,11 @@
     createRoomBtn.disabled = true;
     try {
       const result = await WS.createRoom({ room: roomId, password: password || null, username });
-      console.log('Room created:', result);
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
       setTimeout(() => hideModal(), 100);
     } catch (e) {
-      console.error('Create room error:', e);
       showError('Failed to create room: ' + e.message);
       createRoomBtn.disabled = false;
     }
@@ -95,13 +91,11 @@
     joinRoomBtn.disabled = true;
     try {
       const result = await WS.joinRoom({ room: roomId, password: password || null, username });
-      console.log('Room joined:', result);
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
       setTimeout(() => hideModal(), 100);
     } catch (e) {
-      console.error('Join room error:', e);
       showError('Failed to join room: ' + e.message);
       joinRoomBtn.disabled = false;
     }
@@ -113,13 +107,11 @@
     joinRoomBtn.disabled = true;
     try {
       const result = await WS.joinRoom({ room: roomId, password: null, username });
-      console.log('Quick joined room:', result);
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
       setTimeout(() => hideModal(), 100);
     } catch (e) {
-      console.error('Quick join error:', e);
       showError('Failed to join room: ' + e.message);
       joinRoomBtn.disabled = false;
     }

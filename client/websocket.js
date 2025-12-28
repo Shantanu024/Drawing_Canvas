@@ -10,7 +10,7 @@
   function initSocket() {
     if (connectionPromise) return connectionPromise;
     
-    connectionPromise = new Promise((resolve) => {
+    connectionPromise = new Promise((resolve, reject) => {
       socket = io();
       socket.on('connect', () => {
         dispatch('status', { connected: true });
@@ -18,6 +18,16 @@
       });
 
       socket.on('disconnect', () => dispatch('status', { connected: false }));
+      
+      socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        dispatch('status', { connected: false, error: error });
+      });
+      
+      socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        dispatch('status', { connected: false, error: error });
+      });
 
       // State sync
       socket.on('state:init', (s) => dispatch('state:init', s));

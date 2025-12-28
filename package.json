@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "Multi-user real-time collaborative drawing app (vanilla JS + Node + Socket.io)",
   "main": "server/server.js",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "scripts": {
     "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+    "build": "echo 'No build step needed for this app'"
   },
   "author": "",
   "license": "MIT",
