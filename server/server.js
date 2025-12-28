@@ -196,5 +196,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\nCollaborative Canvas running on http://localhost:${PORT}`);
+  console.log(`Collaborative Canvas running on http://localhost:${PORT}`);
 });
