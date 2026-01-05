@@ -68,13 +68,19 @@
     createRoomBtn.disabled = true;
     try {
       const result = await WS.createRoom({ room: roomId, password: password || null, username });
-      currentRoom = roomId;
-      currentUsername = username;
-      roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
-      // Hide modal and wait for DOM to settle before canvas is initialized
-      hideModal();
+      // Give state:init time to be processed
+      await new Promise(resolve => setTimeout(resolve, 50));
+      if (result && result.success) {
+        currentRoom = roomId;
+        currentUsername = username;
+        roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
+        hideModal();
+      } else {
+        throw new Error(result?.error || 'Failed to create room');
+      }
     } catch (e) {
-      showError('Failed to create room: ' + e.message);
+      console.error('Create error:', e);
+      showError('Failed to create room: ' + (e.message || String(e)));
       createRoomBtn.disabled = false;
     }
   });
@@ -92,13 +98,19 @@
     joinRoomBtn.disabled = true;
     try {
       const result = await WS.joinRoom({ room: roomId, password: password || null, username });
-      currentRoom = roomId;
-      currentUsername = username;
-      roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
-      // Hide modal and wait for DOM to settle before canvas is initialized
-      hideModal();
+      // Give state:init time to be processed
+      await new Promise(resolve => setTimeout(resolve, 50));
+      if (result && result.success) {
+        currentRoom = roomId;
+        currentUsername = username;
+        roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
+        hideModal();
+      } else {
+        throw new Error(result?.error || 'Failed to join room');
+      }
     } catch (e) {
-      showError('Failed to join room: ' + e.message);
+      console.error('Join error:', e);
+      showError('Failed to join room: ' + (e.message || String(e)));
       joinRoomBtn.disabled = false;
     }
   });
