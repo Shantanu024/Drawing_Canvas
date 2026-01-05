@@ -4,6 +4,13 @@
   const canvas = document.getElementById('canvas');
   const live = document.getElementById('live');
   const wrap = document.getElementById('canvasWrap');
+  
+  // Guard against missing elements
+  if (!canvas || !live || !wrap) {
+    console.error('Canvas elements not found. Check HTML structure.');
+    return;
+  }
+  
   const cursorsEl = document.getElementById('cursors');
   const statusEl = document.getElementById('status');
   const revEl = document.getElementById('rev');
@@ -15,6 +22,12 @@
 
   const ctx = canvas.getContext('2d');
   const liveCtx = live.getContext('2d');
+  
+  // Guard against canvas context failures
+  if (!ctx || !liveCtx) {
+    console.error('Failed to get canvas contexts');
+    return;
+  }
 
   let isDrawing = false;
   let strokeId = null;
@@ -299,7 +312,10 @@
     // Store full ops data for visibility calculation
     window.fullOpsData = s.ops;
     committedOps = getVisibleOps(s.ops);
-    setCanvasSize();
+    // Ensure DOM has finished rendering before calculating canvas size
+    requestAnimationFrame(() => {
+      setCanvasSize();
+    });
   });
 
   WS.on('state:op-append', ({ revision: rev, op }) => {

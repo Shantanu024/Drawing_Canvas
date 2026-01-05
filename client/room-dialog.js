@@ -71,7 +71,8 @@
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
-      setTimeout(() => hideModal(), 100);
+      // Hide modal and wait for DOM to settle before canvas is initialized
+      hideModal();
     } catch (e) {
       showError('Failed to create room: ' + e.message);
       createRoomBtn.disabled = false;
@@ -94,7 +95,8 @@
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
-      setTimeout(() => hideModal(), 100);
+      // Hide modal and wait for DOM to settle before canvas is initialized
+      hideModal();
     } catch (e) {
       showError('Failed to join room: ' + e.message);
       joinRoomBtn.disabled = false;
@@ -110,7 +112,8 @@
       currentRoom = roomId;
       currentUsername = username;
       roomInfo.textContent = `Room: ${roomId} | User: ${username}`;
-      setTimeout(() => hideModal(), 100);
+      // Hide modal immediately
+      hideModal();
     } catch (e) {
       showError('Failed to join room: ' + e.message);
     }
