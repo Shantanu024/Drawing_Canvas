@@ -31,9 +31,13 @@ io.on('connection', (socket) => {
 
   // Room creation: user initiates creating a new room
   socket.on('room:create', ({ room, password, username }, callback) => {
+    if (!room || typeof room !== 'string' || room.trim().length === 0) {
+      if (typeof callback === 'function') callback({ success: false, error: 'Invalid room name' });
+      return;
+    }
     const roomObj = rooms.create(room, password);
     if (!roomObj) {
-      callback({ success: false, error: 'Room already exists' });
+      if (typeof callback === 'function') callback({ success: false, error: 'Room already exists' });
       return;
     }
     // Auto-join the creator
@@ -53,14 +57,18 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('user:list', roomObj.getUsers());
     // Broadcast updated public rooms list
     io.emit('rooms:list', rooms.listPublicRooms());
-    callback({ success: true, room: roomId });
+    if (typeof callback === 'function') callback({ success: true, room: roomId });
   });
 
   // Room joining: user tries to join an existing room
   socket.on('room:join', ({ room, password, username }, callback) => {
+    if (!room || typeof room !== 'string' || room.trim().length === 0) {
+      if (typeof callback === 'function') callback({ success: false, error: 'Invalid room name' });
+      return;
+    }
     const result = rooms.join(room, password);
     if (!result.success) {
-      callback({ success: false, error: result.error });
+      if (typeof callback === 'function') callback({ success: false, error: result.error });
       return;
     }
     
@@ -81,7 +89,7 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('user:list', roomObj.getUsers());
     // Broadcast updated public rooms list
     io.emit('rooms:list', rooms.listPublicRooms());
-    callback({ success: true, room: roomId });
+    if (typeof callback === 'function') callback({ success: true, room: roomId });
   });
 
   // Legacy join for backward compatibility (auto-create/join lobby)
@@ -106,7 +114,7 @@ io.on('connection', (socket) => {
 
   // Cursor broadcasting (throttled client-side)
   socket.on('cursor:move', (payload) => {
-    if (!joined) return;
+    if (!joined || !payload || typeof payload.x !== 'number' || typeof payload.y !== 'number') return;
     payload.userId = socket.id;
     payload.color = user?.color;
     payload.name = user?.name;
@@ -115,13 +123,13 @@ io.on('connection', (socket) => {
 
   // Live stroke streaming so others can see drawing before commit
   socket.on('stroke:begin', (s) => {
-    if (!joined) return;
+    if (!joined || !s || !s.start || typeof s.start.x !== 'number' || typeof s.start.y !== 'number') return;
     const payload = { ...s, userId: socket.id, color: s.tool === 'eraser' ? null : user.color };
     socket.to(roomId).emit('stroke:begin', payload);
   });
 
   socket.on('stroke:chunk', (s) => {
-    if (!joined) return;
+    if (!joined || !s || !s.points || !Array.isArray(s.points)) return;
     const payload = { ...s, userId: socket.id };
     socket.to(roomId).emit('stroke:chunk', payload);
   });
@@ -130,6 +138,7 @@ io.on('connection', (socket) => {
     if (!joined) return;
     const roomObj = rooms.get(roomId);
     if (!roomObj) return;
+    if (!s || !s.points || !Array.isArray(s.points)) return; // Validate input
 
     // Commit operation to authoritative history (truncate redo tail if any)
     const op = {

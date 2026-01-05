@@ -58,11 +58,14 @@ class DrawingState {
       return false;
     }
     const userState = this.userUndoState.get(userId);
+    if (!userState.undoneOpIndices || userState.undoneOpIndices.size === 0) {
+      return false;
+    }
     
     // Find the most recent undone op by this user and restore it
     let maxIdx = -1;
     for (const idx of userState.undoneOpIndices) {
-      if (idx >= maxIdx) maxIdx = idx;
+      if (idx > maxIdx) maxIdx = idx;
     }
     
     if (maxIdx === -1) return false;

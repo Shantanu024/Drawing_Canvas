@@ -20,12 +20,12 @@
       socket.on('disconnect', () => dispatch('status', { connected: false }));
       
       socket.on('error', (error) => {
-        if (process.env.NODE_ENV !== 'production') console.error('Socket error:', error);
+        console.error('Socket error:', error);
         dispatch('status', { connected: false, error: error });
       });
       
       socket.on('connect_error', (error) => {
-        if (process.env.NODE_ENV !== 'production') console.error('Connection error:', error);
+        console.error('Connection error:', error);
         dispatch('status', { connected: false, error: error });
       });
 

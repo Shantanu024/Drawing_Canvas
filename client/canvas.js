@@ -120,9 +120,9 @@
     if (!self) return;
     isDrawing = true;
     strokeId = cryptoRandom();
-    const tool = toolEl.value;
-    const color = colorEl.value;
-    const width = +widthEl.value;
+    const tool = toolEl?.value || 'brush';
+    const color = colorEl?.value || '#000000';
+    const width = +(widthEl?.value || 3);
     const pt = normalize({ x: e.clientX, y: e.clientY });
 
     const liveObj = { strokeId, tool, color, width, points: [pt] };
@@ -207,10 +207,10 @@
       id: strokeId,
       userId: self?.id || 'local',
       username: self?.name || 'You',
-      tool: s.tool,
-      color: s.tool === 'eraser' ? null : s.color,
-      width: s.width,
-      points: s.points.slice(),
+      tool: s?.tool || 'brush',
+      color: (s?.tool === 'eraser') ? null : (s?.color || colorEl?.value || '#000000'),
+      width: s?.width || +(widthEl?.value || 3),
+      points: s?.points?.slice() || [],
       t0: Date.now()
     };
     if (!committedOps.find(o => o.id === optimisticOp.id)) {

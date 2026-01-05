@@ -104,7 +104,7 @@
   // Quick join from public rooms list
   async function quickJoin(roomId) {
     const username = prompt('Enter your name:', 'Guest') || 'Guest';
-    joinRoomBtn.disabled = true;
+    if (!username) return; // User cancelled
     try {
       const result = await WS.joinRoom({ room: roomId, password: null, username });
       currentRoom = roomId;
@@ -113,7 +113,6 @@
       setTimeout(() => hideModal(), 100);
     } catch (e) {
       showError('Failed to join room: ' + e.message);
-      joinRoomBtn.disabled = false;
     }
   }
 
@@ -158,16 +157,18 @@
 
   // Show modal on load
   window.addEventListener('load', () => {
+    if (!modal) return; // Skip if modal not found
     showModal();
     // Pre-fill from URL params if available
     const params = new URLSearchParams(location.search);
     if (params.get('room')) {
-      joinRoomId.value = params.get('room');
+      if (joinRoomId) joinRoomId.value = params.get('room');
       // Switch to join tab
-      document.querySelector('[data-tab="join"]').click();
+      const joinBtn = document.querySelector('[data-tab="join"]');
+      if (joinBtn) joinBtn.click();
     }
     if (params.get('name')) {
-      joinUsername.value = params.get('name');
+      if (joinUsername) joinUsername.value = params.get('name');
     }
   });
 
