@@ -69,7 +69,7 @@
     try {
       const result = await WS.createRoom({ room: roomId, password: password || null, username });
       // Give state:init time to be processed
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, 100));
       if (result && result.success) {
         currentRoom = roomId;
         currentUsername = username;
@@ -99,7 +99,7 @@
     try {
       const result = await WS.joinRoom({ room: roomId, password: password || null, username });
       // Give state:init time to be processed
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, 100));
       if (result && result.success) {
         currentRoom = roomId;
         currentUsername = username;

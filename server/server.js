@@ -57,7 +57,11 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('user:list', roomObj.getUsers());
     // Broadcast updated public rooms list
     io.emit('rooms:list', rooms.listPublicRooms());
-    if (typeof callback === 'function') callback({ success: true, room: roomId });
+    
+    // Call callback after all state emissions
+    if (typeof callback === 'function') {
+      setImmediate(() => callback({ success: true, room: roomId }));
+    }
   });
 
   // Room joining: user tries to join an existing room
@@ -89,7 +93,11 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('user:list', roomObj.getUsers());
     // Broadcast updated public rooms list
     io.emit('rooms:list', rooms.listPublicRooms());
-    if (typeof callback === 'function') callback({ success: true, room: roomId });
+    
+    // Call callback after all state emissions
+    if (typeof callback === 'function') {
+      setImmediate(() => callback({ success: true, room: roomId }));
+    }
   });
 
   // Legacy join for backward compatibility (auto-create/join lobby)
