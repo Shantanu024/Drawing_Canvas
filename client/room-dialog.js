@@ -15,6 +15,12 @@
   const roomsList = document.getElementById('roomsList');
   const roomInfo = document.getElementById('roomInfo');
 
+  // Guard against missing elements
+  if (!modal || !createTab || !joinTab || !createRoomBtn || !joinRoomBtn) {
+    console.error('Room dialog elements not found. Check HTML structure.');
+    return;
+  }
+
   let currentRoom = null;
   let currentUsername = null;
 
@@ -171,9 +177,19 @@
   // The header "Change Room" button was removed; modal can still be shown on load
 
   // Show modal on load
-  window.addEventListener('load', () => {
+  window.addEventListener('load', async () => {
     if (!modal) return; // Skip if modal not found
-    showModal();
+    
+    // Wait for WS to initialize
+    try {
+      await WS.on('status', () => {}); // Ensure connection is established
+      showModal();
+    } catch (e) {
+      console.error('Failed to initialize WS:', e);
+      showError('Failed to connect to server. Please refresh the page.');
+      return;
+    }
+    
     // Pre-fill from URL params if available
     const params = new URLSearchParams(location.search);
     if (params.get('room')) {

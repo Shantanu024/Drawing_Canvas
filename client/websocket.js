@@ -11,13 +11,22 @@
     if (connectionPromise) return connectionPromise;
     
     connectionPromise = new Promise((resolve, reject) => {
-      socket = io();
+      socket = io({
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: 10
+      });
       socket.on('connect', () => {
+        console.log('Socket connected:', socket.id);
         dispatch('status', { connected: true });
         resolve();
       });
 
-      socket.on('disconnect', () => dispatch('status', { connected: false }));
+      socket.on('disconnect', () => {
+        console.log('Socket disconnected');
+        dispatch('status', { connected: false });
+      });
       
       socket.on('error', (error) => {
         console.error('Socket error:', error);
@@ -47,6 +56,13 @@
         publicRooms = rooms;
         dispatch('rooms:list', rooms);
       });
+
+      // Set a timeout for connection
+      setTimeout(() => {
+        if (!socket.connected) {
+          reject(new Error('Connection timeout'));
+        }
+      }, 5000);
     });
     
     return connectionPromise;

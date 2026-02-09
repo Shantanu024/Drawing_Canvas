@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: '*' },
-  transports: ['polling'] // Force HTTP long-polling only for Vercel
+  transports: ['websocket'] // Use WebSocket only for optimal real-time performance
 });
 
 const PORT = process.env.PORT || 3000;
@@ -123,7 +123,10 @@ io.on('connection', (socket) => {
 
   // Cursor broadcasting (throttled client-side)
   socket.on('cursor:move', (payload) => {
-    if (!joined || !payload || typeof payload.x !== 'number' || typeof payload.y !== 'number') return;
+    if (!joined || !payload || typeof payload.x !== 'number' || typeof payload.y !== 'number') {
+      console.warn('Invalid cursor:move payload from', socket.id);
+      return;
+    }
     payload.userId = socket.id;
     payload.color = user?.color;
     payload.name = user?.name;
@@ -132,13 +135,19 @@ io.on('connection', (socket) => {
 
   // Live stroke streaming so others can see drawing before commit
   socket.on('stroke:begin', (s) => {
-    if (!joined || !s || !s.start || typeof s.start.x !== 'number' || typeof s.start.y !== 'number') return;
+    if (!joined || !s || !s.start || typeof s.start.x !== 'number' || typeof s.start.y !== 'number') {
+      console.warn('Invalid stroke:begin payload from', socket.id);
+      return;
+    }
     const payload = { ...s, userId: socket.id, color: s.tool === 'eraser' ? null : user.color };
     socket.to(roomId).emit('stroke:begin', payload);
   });
 
   socket.on('stroke:chunk', (s) => {
-    if (!joined || !s || !s.points || !Array.isArray(s.points)) return;
+    if (!joined || !s || !s.points || !Array.isArray(s.points)) {
+      console.warn('Invalid stroke:chunk payload from', socket.id);
+      return;
+    }
     const payload = { ...s, userId: socket.id };
     socket.to(roomId).emit('stroke:chunk', payload);
   });
