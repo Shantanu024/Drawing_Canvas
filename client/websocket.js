@@ -15,7 +15,8 @@
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        reconnectionAttempts: 10
+        reconnectionAttempts: 10,
+        transports: ['websocket']
       });
       socket.on('connect', () => {
         console.log('Socket connected:', socket.id);
