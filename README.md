@@ -1,103 +1,87 @@
-# COLAB-CANVAS
+# Collaborative Canvas
 
-A real-time collaborative drawing application that allows multiple users to draw simultaneously on a shared canvas. Built with vanilla JavaScript, Node.js, and Socket.io for seamless, low-latency collaboration.
+A real-time collaborative drawing application built with vanilla JavaScript, Node.js, and Socket.io. Multiple users can draw simultaneously on a shared canvas with instant synchronization.
 
-## 📋 Table of Contents
+## Features
 
-- [Features](#features)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Architecture](#architecture)
-- [Socket Events](#socket-events)
-- [Keyboard Shortcuts](#keyboard-shortcuts)
-- [Deployment](#deployment)
-- [License](#license)
+- **Real-time Collaboration**: Multiple users drawing simultaneously with instant sync
+- **Room-based Organization**: Create or join rooms with optional password protection
+- **Drawing Tools**: Brush, eraser, customizable stroke width (1-50px), color picker
+- **User Presence**: Color-coded indicators for active users
+- **Undo/Redo**: Per-user and global undo/redo functionality
+- **Responsive Canvas**: Auto-adapts to window resizing with high DPI support
+- **Public Room Discovery**: Browse and join public rooms
 
-## ✨ Features
-
-- **Real-time Collaboration**: Multiple users can draw on the same canvas simultaneously with instant synchronization
-- **Room-based Organization**: Create or join drawing rooms with optional password protection
-- **Drawing Tools**: 
-  - Brush tool for freehand drawing
-  - Eraser tool for removing content
-  - Customizable stroke width (1-50px)
-  - Color picker for custom colors
-- **User Presence**: See active users in the room with color-coded indicators
-- **Undo/Redo Functionality**: Individual undo/redo per user with support for global undo/redo
-- **Responsive Canvas**: Automatically adapts to window resizing with high DPI support
-- **Password-Protected Rooms**: Secure private rooms with optional password protection
-- **Public Room Discovery**: Browse and join public rooms without passwords
-- **Lightweight**: Uses vanilla JavaScript with no frontend framework dependencies
-- **Vercel Deployment Ready**: Pre-configured for serverless deployment
-
-## 📋 Requirements
+## Requirements
 
 - **Node.js**: 24.x or higher
 - **npm**: 10.x or higher
-- **Modern Browser**: Chrome, Firefox, Safari, or Edge (with WebSocket/polling support)
+- **Modern Browser**: Chrome, Firefox, Safari, or Edge
 
-## 📦 Installation
-
-### 1. Clone or Download the Repository
+## Installation
 
 ```bash
 git clone <repository-url>
 cd collaborative-canvas_cop
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
 ```
 
-This installs the following packages:
-- **express**: Web server framework
-- **socket.io**: Real-time bidirectional communication
-- **nodemon** (dev): Auto-restart server during development
-
-## 🚀 Usage
+## Usage
 
 ### Development
-
-Start the development server with auto-reload:
-
 ```bash
 npm run dev
 ```
 
-The server will start on `http://localhost:3000`
-
 ### Production
-
-Start the production server:
-
 ```bash
 npm start
 ```
 
-### Accessing the Application
+Open `http://localhost:3000` in your browser to get started.
 
-1. Open your browser and navigate to `http://localhost:3000`
-2. Create a new room or join an existing one
-3. Enter your username
-4. Start drawing!
+### Quick Start
+1. Create a new room or join an existing one
+2. Enter your username
+3. Start drawing in real-time with others
 
-### Room Workflow
+## Project Structure
 
-#### Creating a Room
-- Click on "Create Room" or the new room option
-- Enter a room name
-- (Optional) Set a password for private rooms
-- Enter your username
-- Begin drawing
+```
+collaborative-canvas/
+├── client/              # Frontend files
+│   ├── index.html       # Main HTML
+│   ├── style.css        # Styling
+│   ├── main.js          # Canvas and drawing logic
+│   ├── websocket.js     # Socket.io client
+│   ├── room-dialog.js   # Room creation/join UI
+│   └── canvas.js        # Canvas drawing utilities
+├── server/              # Backend files
+│   ├── server.js        # Express & Socket.io server
+│   ├── rooms.js         # Room management
+│   └── drawing-state.js # Drawing state handling
+├── package.json         # Dependencies
+└── README.md
+```
 
-#### Joining a Room
-- Select from the list of public rooms, or
-- Enter a room name to join
-- Enter a password if the room is protected
+## Deployment
+
+### Render
+1. Push code to GitHub
+2. Create a new Web Service on [render.com](https://render.com)
+3. Connect your GitHub repo
+4. Set start command: `npm start`
+5. Add environment variable: `NODE_ENV=production`
+6. Deploy
+
+### Important Notes
+- **In-Memory Storage**: Rooms and drawing state are stored in memory and will reset on server restart
+- **CORS**: Update CORS origin in `server/server.js` for production domains
+- **WebSocket**: Fully supported on Render
+
+## License
+
+MIT
 - Enter your username
 - Join the canvas
 
